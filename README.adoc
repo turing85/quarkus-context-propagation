@@ -1,0 +1,38 @@
+:listing-caption: Listing
+
+= Quarkus Context Propagation
+
+== Story
+As a developer
+
+* I would like to add a variable to the `MDC`-Context in a filter
+
+.Filter definition
+[source,java]
+----
+include::./src/main/java/de/turing85/quarkus/context/propagation/AddValueToMdcFilter.java[]
+----
+
+* and be able to access it in my REST-endpoint:
+
+.Usage in Endpoint
+[source,java]
+----
+include::./src/main/java/de/turing85/quarkus/context/propagation/MdcEndpoint.java[]
+----
+
+== Current state
+If we build (`mvn package`), we see that the test fails. In the logs, we see:
+
+.Log output from test
+[source, log]
+----
+2022-06-04 17:23:24,518 INFO  [de.tur.qua.con.pro.AddValueToMdcFilter] [FOO=foo] (vert.x-eventloop-thread-0) Key "FOO" with value "foo" is now in MDC
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 8.249 s <<< FAILURE! - in de.turing85.MdcEndpointTest
+[ERROR] de.turing85.MdcEndpointTest.testHelloEndpoint  Time elapsed: 2.782 s  <<< FAILURE!
+java.lang.AssertionError:
+1 expectation failed.
+Expected status code <200> but was <204>.
+----
+
+We can see that the filter sets the value correctly, and the value is present in the `MDC`. But in the Endpoint class, the value is not available.
