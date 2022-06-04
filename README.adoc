@@ -79,9 +79,8 @@ If we build (`mvn package`), we see that the test fails. In the logs, we see:
 [source, log]
 ----
 ...
-2022-06-04 17:23:24,518 INFO  [de.tur.qua.con.pro.AddValueToMdcFilter] [FOO=foo] (vert.x-eventloop-thread-0) Key "FOO" with value "foo" is now in MDC
-[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 8.249 s <<< FAILURE! - in de.turing85.MdcEndpointTest
-[ERROR] de.turing85.MdcEndpointTest.testHelloEndpoint  Time elapsed: 2.782 s  <<< FAILURE!
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 7.816 s <<< FAILURE! - in de.turing85.MdcEndpointTest
+[ERROR] de.turing85.MdcEndpointTest.testHelloEndpoint  Time elapsed: 2.225 s  <<< FAILURE!
 java.lang.AssertionError:
 1 expectation failed.
 Expected status code <200> but was <204>.
