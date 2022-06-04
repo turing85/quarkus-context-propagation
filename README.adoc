@@ -76,9 +76,11 @@ public class MdcEndpoint {
 If we build (`mvn package`), we see that the test fails. In the logs, we see:
 
 .Log output from test
-[source, log]
+[source, log, linenums]
 ----
 ...
+2022-06-04 17:45:42,701 INFO  [de.tur.qua.con.pro.AddValueToMdcFilter] [FOO=foo] (vert.x-eventloop-thread-1) Key "FOO" with value "foo" is now in MDC
+2022-06-04 17:45:42,711 INFO  [de.tur.qua.con.pro.MdcEndpoint] [FOO=] (executor-thread-0) Key "FOO" has value "null" in MDC
 [ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 7.816 s <<< FAILURE! - in de.turing85.MdcEndpointTest
 [ERROR] de.turing85.MdcEndpointTest.testHelloEndpoint  Time elapsed: 2.225 s  <<< FAILURE!
 java.lang.AssertionError:
@@ -87,4 +89,4 @@ Expected status code <200> but was <204>.
 ...
 ----
 
-We can see that the filter sets the value correctly, and the value is present in the `MDC`. But in the Endpoint class, the value is not available.
+We can see that the filter sets the value correctly, and the value is present in the `MDC` (line 2). But in the Endpoint class, the value is not available (line 3, as well as the fact that the response is `204 NO CONTENT`).
