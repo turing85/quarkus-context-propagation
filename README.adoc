@@ -10,7 +10,34 @@ As a developer
 .Filter definition
 [source,java]
 ----
-include::./src/main/java/de/turing85/quarkus/context/propagation/AddValueToMdcFilter.java[]
+package de.turing85.quarkus.context.propagation;
+
+import io.quarkus.vertx.http.runtime.filters.Filters;
+import io.vertx.ext.web.RoutingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+
+@Dependent
+public class AddValueToMdcFilter {
+    public static final Logger LOGGER = LoggerFactory.getLogger(AddValueToMdcFilter.class);
+    public static final String MDC_KEY = "FOO";
+    public static final String MDC_VALUE = "foo";
+
+    void registerFilter(@Observes Filters filters) {
+        filters.register(this::addValueToMdcAndProceed, 10);
+    }
+
+    void addValueToMdcAndProceed(RoutingContext context) {
+        MDC.put(MDC_KEY, MDC_VALUE);
+        LOGGER.info("Key \"{}\" with value \"{}\" is now in MDC", MDC_KEY, MDC.get(MDC_KEY));
+
+        context.next();
+    }
+}
 ----
 
 * and be able to access it in my REST-endpoint:
@@ -18,7 +45,31 @@ include::./src/main/java/de/turing85/quarkus/context/propagation/AddValueToMdcFi
 .Usage in Endpoint
 [source,java]
 ----
-include::./src/main/java/de/turing85/quarkus/context/propagation/MdcEndpoint.java[]
+package de.turing85.quarkus.context.propagation;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+@Path("")
+public class MdcEndpoint {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdcEndpoint.class);
+
+    @GET
+    @Path("{mdcKey}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String foo(@PathParam("mdcKey") String mdcKey) {
+        String mdcValue = MDC.get(mdcKey);
+        LOGGER.info("Key \"{}\" has value \"{}\" in MDC", mdcKey, mdcValue);
+        return mdcValue;
+    }
+}
 ----
 
 == Current state
@@ -27,12 +78,14 @@ If we build (`mvn package`), we see that the test fails. In the logs, we see:
 .Log output from test
 [source, log]
 ----
+...
 2022-06-04 17:23:24,518 INFO  [de.tur.qua.con.pro.AddValueToMdcFilter] [FOO=foo] (vert.x-eventloop-thread-0) Key "FOO" with value "foo" is now in MDC
 [ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 8.249 s <<< FAILURE! - in de.turing85.MdcEndpointTest
 [ERROR] de.turing85.MdcEndpointTest.testHelloEndpoint  Time elapsed: 2.782 s  <<< FAILURE!
 java.lang.AssertionError:
 1 expectation failed.
 Expected status code <200> but was <204>.
+...
 ----
 
 We can see that the filter sets the value correctly, and the value is present in the `MDC`. But in the Endpoint class, the value is not available.
