@@ -1,4 +1,4 @@
 quarkus:
   log:
     console:
-      format: '%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{3.}] [FOO=%X{FOO}] (%t) %s%e%n'
+      format: '%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{3.}] [%X] (%t) %s%e%n'
