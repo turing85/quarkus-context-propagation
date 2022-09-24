@@ -1,4 +1,14 @@
 quarkus:
   log:
     console:
-      format: '%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{3.}] [FOO=%X{FOO}] (%t) %s%e%n'
+      format: '%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{3.}] [%X] [%x] (%t) %s%e%n'
+app:
+  config:
+    http:
+      header:
+        keys:
+          correlation-id: X-Correlation-ID
+    log:
+      mdc:
+        keys:
+          correlation-id: correlationId
